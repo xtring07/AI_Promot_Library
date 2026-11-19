@@ -1,0 +1,692 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f8f7">
+<title>XTRING AI Promot Library</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<style>
+:root{
+ --bg:#f7f8f7;--surface:#fff;--text:#151915;
+ --muted:#747d75;--line:#e3eae4;--accent:#16834a;
+ --green:#19a45b;--soft:rgba(25,164,91,.08);
+ --shadow:rgba(19,112,62,.12);
+ --shadow2:rgba(19,112,62,.20);
+}
+body.dark{
+ --bg:#101411;--surface:#1a211c;--text:#f1f7f2;
+ --muted:#a3afa5;--line:#2b3930;--accent:#4bd486;
+ --green:#38c879;--soft:rgba(56,200,121,.10);
+ --shadow:rgba(0,0,0,.25);
+ --shadow2:rgba(38,180,100,.15);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--green) var(--bg)}
+::-webkit-scrollbar{width:7px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--green);border-radius:10px;border:2px solid var(--bg)}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,sans-serif;padding-bottom:110px;overflow-y:scroll;
+}
+header{
+ padding:19px 17px 15px;border-bottom:1px solid var(--line);
+ background:var(--surface);
+ box-shadow:0 3px 13px var(--shadow),0 1px 4px var(--shadow2);
+ position:relative;z-index:2
+}
+.brand{font-size:21px;font-weight:800;color:var(--accent)}
+.tagline{font-size:11px;color:var(--muted);margin-top:5px}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.theme{
+ border:1px solid var(--line);background:var(--surface);color:var(--text);
+ padding:9px 12px;border-radius:10px;cursor:pointer;
+ box-shadow:0 3px 8px var(--shadow),0 1px 3px var(--shadow2)
+}
+main{
+ max-width:720px;margin:auto;padding:16px 16px 140px;
+ min-height:calc(100vh - 150px)
+}
+main section{padding-bottom:20px}
+h2{font-size:21px;margin:9px 0}
+.sub{font-size:13px;color:var(--muted);line-height:1.5}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:17px 0}
+.stat,.department,.prompt,.panel{
+ background:var(--surface);border:1px solid var(--line);
+ border-radius:14px;
+ box-shadow:0 4px 12px var(--shadow),0 1px 4px var(--shadow2);
+}
+.stat{padding:14px;border-top:2px solid var(--green)}
+.stat strong{font-size:21px;display:block}
+.stat small{color:var(--muted);font-size:11px}
+.department{
+ display:flex;align-items:center;gap:12px;padding:14px;
+ margin:10px 0;cursor:pointer;
+ transition:transform .16s,box-shadow .16s;
+}
+.department:active,.prompt:active{transform:scale(.99)}
+.deptEmoji{font-size:25px;width:36px;text-align:center}
+.deptInfo{flex:1;min-width:0}
+.deptName,.promptTitle{font-size:14px;font-weight:700}
+.deptDesc,.promptDesc{
+ font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5
+}
+.deptCount{font-size:11px;color:var(--accent);white-space:nowrap}
+.number{font-size:10px;color:var(--muted);margin-bottom:4px}
+.sectionHead{
+ display:flex;justify-content:space-between;align-items:center;
+ margin:20px 0 10px
+}
+.backline{display:flex;gap:9px;align-items:center;margin-bottom:15px}
+.backline button,.btn{
+ border:1px solid var(--line);background:var(--surface);
+ color:var(--text);padding:9px 12px;border-radius:9px;cursor:pointer;
+ box-shadow:0 3px 7px var(--shadow),0 1px 3px var(--shadow2);
+ transition:transform .15s,box-shadow .15s
+}
+.backline button:active,.btn:active,.theme:active{
+ transform:translateY(1px);box-shadow:0 1px 3px var(--shadow)
+}
+.prompt{padding:15px;margin:10px 0;border-left:3px solid var(--green)}
+.promptActions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{font-size:12px}
+.btn.primary{
+ background:var(--green);color:white;border-color:var(--green);
+ box-shadow:0 3px 9px var(--shadow2)
+}
+.promptText{
+ font-size:13px;line-height:1.7;color:var(--muted);
+ white-space:pre-wrap;margin-top:13px;overflow-wrap:anywhere
+}
+.panel{padding:16px;margin:12px 0;border-top:2px solid var(--green)}
+.panel h3{margin:0 0 12px;font-size:16px}
+.searchBox{margin:12px 0}
+.searchBox input{
+ width:100%;padding:12px;border:1px solid var(--line);
+ border-radius:10px;background:var(--surface);color:var(--text);
+ font-size:14px;outline:none;
+ box-shadow:inset 0 1px 4px var(--shadow)
+}
+.searchBox input:focus{border-color:var(--green)}
+.profileLine{margin:10px 0;font-size:13px;line-height:1.6}
+.profileLabel{color:var(--muted);font-size:11px;display:block}
+.profileLink{color:var(--accent);text-decoration:underline;overflow-wrap:anywhere}
+.empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:13px}
+.hidden{display:none!important}
+footer{text-align:center;color:var(--muted);font-size:10px;padding:25px 5px}
+.bottom{
+ position:fixed;bottom:0;left:0;right:0;min-height:67px;
+ background:var(--surface);border-top:1px solid var(--line);
+ display:flex;justify-content:space-around;align-items:center;
+ z-index:10;box-shadow:0 -4px 13px var(--shadow),0 -1px 4px var(--shadow2);
+ padding-bottom:env(safe-area-inset-bottom)
+}
+.navbtn{
+ border:0;background:transparent;color:var(--muted);font-size:10px;
+ display:flex;flex-direction:column;align-items:center;gap:4px;
+ min-width:55px;padding:8px 4px;cursor:pointer
+}
+.navbtn b{font-size:19px;font-weight:400}
+.navbtn.active{color:var(--green);font-weight:bold}
+.navbtn:disabled{opacity:.3}
+.toast{
+ position:fixed;bottom:85px;left:50%;transform:translateX(-50%);
+ background:var(--green);color:white;padding:10px 16px;
+ border-radius:20px;font-size:12px;z-index:20;display:none;
+ max-width:90%;text-align:center;
+ box-shadow:0 4px 14px var(--shadow2)
+}
+@media(hover:hover){
+ .department:hover,.prompt:hover{
+  transform:translateY(-2px);
+  box-shadow:0 7px 17px var(--shadow),0 2px 7px var(--shadow2)
+ }
+}
+@media(max-width:380px){
+ .brand{font-size:19px}
+ .theme{padding:8px 9px;font-size:12px}
+ .deptCount{font-size:10px}
+ .navbtn{min-width:48px;font-size:9px}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="topline">
+  <div>
+   <div class="brand">AI Promot Library</div>
+   <div class="tagline">Technology from Future</div>
+  </div>
+  <button class="theme" id="themeBtn">☾ Dark Mode</button>
+ </div>
+</header>
+
+<main>
+<section id="homePage">
+ <h2>Prompt Library</h2>
+ <div class="sub">Explore creative prompts across 86 departments. Choose a department to discover its prompts.</div>
+ <div class="stats">
+  <div class="stat"><strong id="departmentTotal">86</strong><small>Departments</small></div>
+  <div class="stat"><strong id="promptTotal">2,446</strong><small>Total prompts</small></div>
+ </div>
+ <div class="sectionHead"><strong>All Departments</strong><span class="sub" id="departmentCountLabel">82 available</span></div>
+ <div id="departmentList"></div>
+ <footer>AI Promot Library · Built by Raian Wasi (Kabbo)</footer>
+</section>
+
+<section id="categoryPage" class="hidden">
+ <div class="backline"><button onclick="goPrevious()">← Back</button><span class="sub" id="categoryNumber"></span></div>
+ <h2 id="categoryTitle"></h2>
+ <div class="sub" id="categoryDescription"></div>
+ <div class="sectionHead"><strong>Available Prompts</strong><span class="sub" id="categoryPromptCount"></span></div>
+ <div id="promptList"></div>
+</section>
+
+<section id="detailPage" class="hidden">
+ <div class="backline"><button onclick="goPrevious()">← Back</button><span class="sub">Prompt details</span></div>
+ <h2 id="detailTitle"></h2>
+ <div class="sub" id="detailDepartment"></div>
+ <div class="panel">
+  <h3>Complete Prompt</h3>
+  <div class="promptText" id="detailText"></div>
+  <div class="promptActions">
+   <button class="btn primary" id="copyDetail">Copy</button>
+   <button class="btn" id="saveDetail">☆ Save</button>
+   <button class="btn" id="shareDetail">Share</button>
+  </div>
+ </div>
+</section>
+
+<section id="savedPage" class="hidden">
+ <h2>Saved Prompts</h2>
+ <div class="sub">Your favourite prompts are kept on this device.</div>
+ <div id="savedList"></div>
+</section>
+
+<section id="searchPage" class="hidden">
+ <h2>Search Library</h2>
+ <div class="sub">Search across all departments and prompt titles.</div>
+ <div class="searchBox"><input id="searchInput" placeholder="Search prompts or departments..."></div>
+ <div id="searchResults"></div>
+</section>
+
+<section id="infoPage" class="hidden">
+ <h2>About XTRING</h2>
+ <div class="sub">Technology from Future</div>
+ <div class="panel">
+  <h3>About the Library</h3>
+  <p class="sub">XTRING AI Prompts Library is a creative prompt collection designed to help people explore ideas across image generation, photography, video, design, 3D art, Minecraft and more.</p>
+  <p class="sub" id="libraryStats"></p>
+ </div>
+ <div class="panel"><h3>About the Creator</h3><div id="creatorProfile"></div></div>
+ <div class="panel">
+  <h3>Project Information</h3>
+  <p class="sub">Project: XTRING AI Promot Library</p>
+  <p class="sub">Founder & CEO: Raian Wasi Kabbo)</p>
+    <p class="sub">Pourpose: To Make Your AI use more productive!</p>
+  <p class="sub">©2027 • XTRING⁰⁷</p>
+ </div>
+</section>
+</main>
+
+<nav class="bottom">
+ <button class="navbtn" id="previousBtn"><b>←</b>Previous</button>
+ <button class="navbtn" data-page="saved"><b>☆</b>Saved</button>
+ <button class="navbtn active" data-page="home"><b>⌂</b>Home</button>
+ <button class="navbtn" data-page="search"><b>⌕</b>Search</button>
+ <button class="navbtn" data-page="info"><b>ⓘ</b>Info</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+const CREATOR_INFO={
+ name:"Raian Wasi (Kabbo)",
+ title:"Founder & CEO of XTRING",
+ youtube:"https://youtube.com/@ThunderKabbo_345",
+ about:"Raian Wasi (Kabbo) is the founder and Chief Executive Officer of XTRING, an independent technology initiative established with a bold vision to explore the limitless possibilities of technology, artificial intelligence, and digital innovation. Driven by ambition, creativity, and a forward-thinking mindset, he is committed to transforming imaginative concepts into functional digital experiences and building technological solutions that bring ideas closer to reality. His interests span artificial intelligence, software development, web technologies, digital ecosystems, and next-generation innovation. Through XTRING, he aims to develop an expanding ecosystem of digital platforms, creative tools, and technology-driven services designed to make modern technology more accessible, practical, and empowering. One of his initiatives, the XTRING AI Prompt Library, reflects his commitment to making artificial intelligence easier to explore and use by providing an organized collection of prompts that encourages creativity, experimentation, and productivity. His vision is not limited to following existing technological trends; it is about exploring new possibilities, challenging conventional approaches, and creating experiences that inspire people to think differently. He believes that innovation begins with an idea, but its true value emerges when that idea is transformed into something useful for the world. As he continues developing and expanding the XTRING vision, his long-term ambition is to establish a recognizable technology ecosystem built on originality, accessibility, continuous development, and limitless creativity. For him, technology is not simply about what exists today, but about what can be imagined, developed, and achieved tomorrow.",
+ education:"I am currently a Student",
+ hobbies:"I like to Build XTRING",
+ skills:"Ya, I am not that very skilled in this just trying.",
+ achievements:"I Wish I will become a big Developer.",
+ website:"",
+ location:"Bangladesh"
+};
+
+const departments=[
+["🎨","Image Generation","Create original images from detailed text prompts.",45],
+["📸","Realistic Photography","Generate natural-looking professional photographs.",32],
+["🧑","Portrait Photography","Create expressive portraits and character-focused images.",27],
+["👗","Fashion Photography","Explore clothing, styling and fashion campaigns.",36],
+["🚗","Automotive Photography","Create striking vehicle photography and scenes.",29],
+["📦","Product Photography","Present products with polished commercial visuals.",24],
+["🌿","Nature & Wildlife","Explore landscapes, plants and wildlife imagery.",31],
+["🏛️","Architecture Photography","Create architectural scenes and building visuals.",22],
+["🍽️","Food Photography","Make food imagery for menus and campaigns.",19],
+["🔬","Macro Photography","Explore detailed close-up and miniature subjects.",16],
+["🚁","Aerial & Drone Photography","Create overhead views and aerial compositions.",21],
+["🌃","Night Photography","Explore night scenes and low-light moods.",18],
+["🪄","Photo Manipulation","Combine visual ideas into imaginative compositions.",38],
+["🖼️","Background Editing","Create or replace image backgrounds.",25],
+["🧹","Object Removal & Replacement","Edit scenes by removing or changing objects.",17],
+["✨","Professional Retouching","Refine photographs while keeping a natural look.",23],
+["🕰️","Photo Restoration","Restore the appearance of old photographs.",20],
+["🔍","Image Upscaling","Improve image clarity and resolution.",15],
+["🎞️","Color Grading","Explore cinematic and creative colour treatments.",28],
+["🌸","Anime & Manga","Create anime-inspired and manga-style artwork.",42],
+["💬","Cartoon & Comic Art","Design cartoon scenes and comic illustrations.",26],
+["🖌️","Digital Painting","Create detailed digital artwork and paintings.",34],
+["✏️","Pencil & Sketch Art","Explore pencil drawings and sketch concepts.",18],
+["🎨","Watercolor & Traditional Art","Create traditional-media-inspired artwork.",21],
+["🐉","Fantasy & Mythology","Explore mythical creatures and fantasy worlds.",39],
+["🎬","Text-to-Video","Turn written concepts into video scenes.",35],
+["🖼️","Image-to-Video","Animate still-image concepts into moving scenes.",30],
+["🎥","Cinematic Video","Develop cinematic shots and visual sequences.",44],
+["🎭","Animation Creation","Create animated scenes and visual concepts.",33],
+["🏃","Character Animation","Develop expressive character movement.",22],
+["💠","Logo Animation","Create animated brand marks and logo reveals.",25],
+["🔀","Video Transitions","Explore creative transitions between video scenes.",19],
+["⚡","Velocity & Speed Ramps","Create energetic speed-change concepts.",20],
+["📊","Motion Graphics","Design animated graphic elements.",31],
+["💥","Visual Effects","Explore imaginative visual effects.",37],
+["📼","Video Restoration","Improve the appearance of older video footage.",14],
+["📺","Video Upscaling","Enhance video clarity and resolution.",16],
+["🎞️","Video Stabilization","Create smoother-looking video sequences.",12],
+["🔷","Logo Design","Create distinctive logo concepts.",40],
+["🏷️","Brand Identity","Develop consistent visual brand systems.",35],
+["▶️","YouTube Thumbnails","Design attention-grabbing video thumbnails.",48],
+["🖥️","YouTube Channel Art","Create channel banners and visual identity.",28],
+["📱","Social Media Graphics","Design graphics for social platforms.",32],
+["📌","Poster Design","Create posters for events and campaigns.",27],
+["🔤","Typography Design","Explore expressive lettering and type layouts.",23],
+["🌌","Wallpaper Creation","Create wallpapers for phones and desktops.",41],
+["🎮","Gaming Graphics","Design gaming visuals and promotional artwork.",36],
+["📲","UI/UX Design","Explore interface layouts and user experiences.",29],
+["📈","Infographics & Presentations","Turn information into clear visual designs.",20],
+["🧊","3D Object Design","Create three-dimensional object concepts.",34],
+["🧍","3D Character Design","Design three-dimensional characters.",26],
+["🏙️","3D Architecture","Explore architectural concepts in 3D.",22],
+["💎","3D Product Rendering","Create polished three-dimensional product visuals.",30],
+["🔠","3D Text & Logos","Design dimensional lettering and brand marks.",24],
+["🌪️","Simulation & Particle Effects","Explore particles, motion and simulation visuals.",18],
+["🚀","Sci-Fi & Futuristic Worlds","Create futuristic environments and technology.",43],
+["🌀","Surreal & Impossible Concepts","Explore imaginative and surreal compositions.",37],
+["📚","Book & Story Illustrations","Create illustrations for stories and books.",25],
+["📣","Advertising & Commercial Campaigns","Develop visual concepts for advertising.",33],
+["⚡","XTRING Special Vault","Explore exclusive creative prompt concepts.",50],
+["🏞️","Landscape Photography","Create scenic outdoor photography.",26],
+["🏖️","Travel Photography","Explore travel destinations and visual storytelling.",31],
+["🐾","Pet Photography","Create expressive animal portraits.",17],
+["💍","Jewellery Photography","Present jewellery with elegant lighting.",22],
+["🏎️","Car Racing Graphics","Create motorsport-inspired visuals.",28],
+["🏍️","Motorcycle Photography","Explore dramatic motorcycle photography.",19],
+["🌧️","Weather & Atmosphere","Create rain, fog, snow and atmospheric scenes.",24],
+["🌅","Sunset & Sunrise Art","Explore colourful sky and horizon concepts.",21],
+["⛏️","Minecraft Themed","Create Minecraft builds, scenes, skins, landscapes and cinematic block-world artwork.",36],
+["🧪","Science Illustrations","Present scientific ideas through visuals.",23],
+["🗺️","Maps & World Design","Create fictional maps and world layouts.",27],
+["👾","Game Character Concepts","Develop original characters for games.",35],
+["🧩","Game Environment Design","Create detailed game-world environments.",32],
+["🎼","Music Cover Art","Design visual artwork for music releases.",29],
+["🎟️","Event & Festival Posters","Create promotional event artwork.",20],
+["📰","Magazine & Editorial Layouts","Explore editorial design and layouts.",25],
+["📦","Packaging Design","Create product packaging concepts.",30],
+["🪑","Interior Design","Explore rooms, furniture and interior spaces.",38],
+["🏡","Exterior Design","Create home and building exterior concepts.",27],
+["🧵","Pattern & Textile Design","Explore fabric patterns and textile concepts.",22],
+["🪐","Space & Planet Design","Create planets, galaxies and space scenes.",40],
+["🦾","Robotics & Technology Concepts","Visualize futuristic machines and devices.",34],
+["🛍️","E-commerce Product Graphics","Create polished online product visuals.",26],
+["🎨","Creative Logo Experiments","Explore unusual logo directions and concepts.",31],
+["📖","Book Cover Design","Create covers for books and publications.",36],
+["🧠","Concept Art & Brainstorming","Explore early-stage visual concepts and ideas.",42]
+];
+
+const promptNames=[
+"Professional Masterpiece","Cinematic Composition","Minimalist Concept",
+"Ultra Detailed Creation","Creative Concept","Luxury Visual",
+"Editorial Quality","Dramatic Lighting","Natural Realism",
+"Futuristic Vision","Artistic Expression","Commercial Campaign",
+"Wide Composition","Close-up Detail","Premium Quality",
+"Atmospheric Scene","Experimental Concept","Signature Edition",
+"Studio Quality","Golden Hour","Dark Mood","Bright & Clean",
+"Vintage Style","Modern Design","High Contrast","Soft Lighting",
+"Dynamic Angle","Elegant Composition","Bold Concept",
+"Photorealistic Detail","Dreamlike World","Monochrome Style",
+"Colourful Composition","Luxury Editorial","Documentary Style",
+"Minimal Background","Epic Scene","Fine Details",
+"Visual Storytelling","Professional Campaign","Classic Style",
+"Neon Atmosphere","High-End Finish","Creative Perspective",
+"Fine Art","Magazine Cover","Award-Winning Concept",
+"Special Edition","Extreme Detail","Ultimate Showcase"
+];
+
+const minecraftNames=[
+"Epic Survival Base","Modern Minecraft Mansion","Mega Castle Build",
+"Fantasy Kingdom","Underground Secret Base","Mountain House",
+"Ocean Monument Scene","Cherry Grove Landscape","Ancient City Concept",
+"Nether Fortress Artwork","End Dimension Showcase",
+"Minecraft Village Design","Ultimate Treehouse","Redstone Laboratory",
+"Skyblock Island","Medieval Town","Futuristic Minecraft City",
+"Minecraft Train Station","Underwater Glass Base","Massive Storage Room",
+"Custom Biome","Dragon Battle Scene","Minecraft Parkour Map",
+"Pixel Art Masterpiece","Survival World Showcase","Minecraft Farm Design",
+"Cave Base Concept","Floating Island Build","Minecraft Castle Interior",
+"Blocky Waterfall","Desert Temple Design","Minecraft Winter Village",
+"Minecraft Gaming Thumbnail","Realistic Minecraft Render",
+"Minecraft Character Poster","Ultimate Minecraft World"
+];
+
+const totalPrompts=departments.reduce((s,d)=>s+d[3],0);
+let currentPage="home",historyStack=[],currentDept=0,currentPrompt=0,saved=[];
+
+try{
+ saved=JSON.parse(localStorage.getItem("xtring_saved")||"[]");
+ if(!Array.isArray(saved))saved=[];
+}catch(e){saved=[]}
+
+function titlesForDepartment(d){
+ return d===68?minecraftNames:promptNames;
+}
+function key(d,p){return d+"|"+p}
+function isSaved(d,p){return saved.includes(key(d,p))}
+function persist(){
+ try{localStorage.setItem("xtring_saved",JSON.stringify(saved))}catch(e){}
+}
+function esc(s){
+ return String(s).replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+function descriptionFor(d,p){
+ return "Create a "+(titlesForDepartment(d)[p]||"creative concept").toLowerCase()+
+ " for "+departments[d][1].toLowerCase()+
+ ", with a clear visual direction and professional finish.";
+}
+function getPrompt(d,p){
+ const title=titlesForDepartment(d)[p]||"Creative Concept";
+ const dept=departments[d][1];
+ let t="Create an exceptional "+title+" for "+dept+".\n\n"+
+ "MAIN CONCEPT:\nDevelop a clear, original visual concept based on the title. "+
+ "Make the subject immediately recognizable and give the composition a strong focal point. "+
+ "Use thoughtful placement, balanced proportions and a visually engaging arrangement.\n\n"+
+ "VISUAL DIRECTION:\nUse professional composition, carefully controlled lighting, convincing materials, "+
+ "refined textures, natural depth and coherent colours. Include meaningful details that support the "+
+ "main idea without making the scene cluttered. Make the result polished, visually consistent and "+
+ "suitable for its intended purpose.\n\n"+
+ "CAMERA AND COMPOSITION:\nChoose an appropriate viewing angle, perspective, framing and depth of field. "+
+ "Keep important elements clearly visible. Avoid awkward cropping, distorted proportions and unnecessary objects.\n\n"+
+ "QUALITY:\nAim for excellent detail, clean edges, accurate shapes, realistic shadows where appropriate, "+
+ "balanced contrast and a high-quality finished result. Avoid blurry details, visual noise, random text, "+
+ "watermarks and unwanted artifacts.\n\n"+
+ "CREATIVE FREEDOM:\nMake thoughtful creative decisions that improve the result. Keep the visual identity "+
+ "consistent and make the final output distinctive, attractive and professionally finished.\n\n";
+
+ if(d===68){
+  t+="MINECRAFT STYLE:\nUse authentic Minecraft block-based visual language, recognizable voxel geometry, "+
+  "consistent block proportions and a coherent Minecraft environment. Preserve the game's recognizable "+
+  "visual identity while creating an original and impressive scene. Make builds structurally believable "+
+  "within the Minecraft world.\n\n";
+ }
+ t+="ADDITIONAL CUSTOMIZATION:\n"+
+ "Objects: [Add your objects]\n"+
+ "Resolution: [Choose your resolution]\n"+
+ "Ratio: [Choose your aspect ratio]\n"+
+ "Format: [Choose your format]\n"+
+ "Special Requirements: [Add any special requirements, if any]";
+ return t;
+}
+
+function showToast(message){
+ const toast=document.getElementById("toast");
+ toast.textContent=message;
+ toast.style.display="block";
+ clearTimeout(showToast.timer);
+ showToast.timer=setTimeout(()=>toast.style.display="none",2200);
+}
+
+function showPage(page,push=true){
+ if(push&&currentPage!==page)historyStack.push(currentPage);
+ currentPage=page;
+ ["home","category","detail","saved","search","info"].forEach(p=>{
+  document.getElementById(p+"Page").classList.toggle("hidden",p!==page);
+ });
+ document.querySelectorAll(".navbtn[data-page]").forEach(b=>{
+  b.classList.toggle("active",b.dataset.page===page);
+ });
+ window.scrollTo({top:0,behavior:"smooth"});
+ if(page==="saved")renderSaved();
+ if(page==="info")renderInfo();
+ if(page==="home")renderDepartments();
+}
+function goPrevious(){
+ if(historyStack.length){
+  const previous=historyStack.pop();
+  showPage(previous,false);
+ }else{
+  showPage("home",false);
+ }
+}
+document.getElementById("previousBtn").onclick=goPrevious;
+
+document.querySelectorAll(".navbtn[data-page]").forEach(b=>{
+ b.onclick=()=>showPage(b.dataset.page);
+});
+
+function renderDepartments(){
+ const list=document.getElementById("departmentList");
+ list.innerHTML=departments.map((d,i)=>`
+  <div class="department" onclick="openDepartment(${i})">
+   <div class="deptEmoji">${d[0]}</div>
+   <div class="deptInfo">
+    <div class="number">DEPARTMENT ${String(i+1).padStart(2,"0")}</div>
+    <div class="deptName">${esc(d[1])}</div>
+    <div class="deptDesc">${esc(d[2])}</div>
+   </div>
+   <div class="deptCount">${d[3]} prompts →</div>
+  </div>
+ `).join("");
+ document.getElementById("departmentCountLabel").textContent=departments.length+" available";
+}
+function openDepartment(d){
+ currentDept=d;
+ document.getElementById("categoryNumber").textContent=
+  "DEPARTMENT "+String(d+1).padStart(2,"0");
+ document.getElementById("categoryTitle").textContent=departments[d][1];
+ document.getElementById("categoryDescription").textContent=departments[d][2];
+ document.getElementById("categoryPromptCount").textContent=departments[d][3]+" prompts";
+ renderPrompts(d);
+ showPage("category");
+}
+function renderPrompts(d){
+ const list=document.getElementById("promptList");
+ const names=titlesForDepartment(d);
+ list.innerHTML=Array.from({length:departments[d][3]},(_,p)=>{
+  const title=names[p]||("Creative Prompt "+(p+1));
+  return `<div class="prompt">
+   <div class="number">PROMPT ${String(p+1).padStart(2,"0")}</div>
+   <div class="promptTitle">${esc(title)}</div>
+   <div class="promptDesc">${esc(descriptionFor(d,p))}</div>
+   <div class="promptActions">
+    <button class="btn primary" onclick="copyPrompt(${d},${p})">Copy</button>
+    <button class="btn" onclick="openPrompt(${d},${p})">View</button>
+    <button class="btn" onclick="toggleSaved(${d},${p})">${isSaved(d,p)?"★ Saved":"☆ Save"}</button>
+    <button class="btn" onclick="sharePrompt(${d},${p})">Share</button>
+   </div>
+  </div>`;
+ }).join("");
+}
+function openPrompt(d,p){
+ currentDept=d;currentPrompt=p;
+ const title=titlesForDepartment(d)[p]||("Creative Prompt "+(p+1));
+ document.getElementById("detailTitle").textContent=title;
+ document.getElementById("detailDepartment").textContent=departments[d][1];
+ document.getElementById("detailText").textContent=getPrompt(d,p);
+ updateDetailSaveButton();
+ showPage("detail");
+}
+function updateDetailSaveButton(){
+ const b=document.getElementById("saveDetail");
+ b.textContent=isSaved(currentDept,currentPrompt)?"★ Saved":"☆ Save";
+}
+async function copyText(text){
+ try{
+  if(navigator.clipboard&&window.isSecureContext){
+   await navigator.clipboard.writeText(text);
+  }else{
+   const area=document.createElement("textarea");
+   area.value=text;
+   area.style.position="fixed";
+   area.style.opacity="0";
+   document.body.appendChild(area);
+   area.select();
+   const ok=document.execCommand("copy");
+   area.remove();
+   if(!ok)throw new Error("Copy failed");
+  }
+  showToast("Copied to clipboard!");
+ }catch(e){
+  showToast("Copy unavailable on this browser.");
+ }
+}
+function copyPrompt(d,p){copyText(getPrompt(d,p))}
+document.getElementById("copyDetail").onclick=()=>copyPrompt(currentDept,currentPrompt);
+
+function toggleSaved(d,p){
+ const k=key(d,p);
+ if(isSaved(d,p))saved=saved.filter(x=>x!==k);
+ else saved.push(k);
+ persist();
+ if(currentPage==="category")renderPrompts(d);
+ if(currentPage==="detail")updateDetailSaveButton();
+ if(currentPage==="saved")renderSaved();
+ showToast(isSaved(d,p)?"Prompt saved!":"Removed from saved prompts");
+}
+document.getElementById("saveDetail").onclick=()=>toggleSaved(currentDept,currentPrompt);
+
+async function sharePrompt(d,p){
+ const title=titlesForDepartment(d)[p]||"Creative Prompt";
+ const text=title+"\n\n"+getPrompt(d,p);
+ if(navigator.share){
+  try{await navigator.share({title:title,text:text})}
+  catch(e){}
+ }else{
+  copyText(text);
+ }
+}
+document.getElementById("shareDetail").onclick=()=>sharePrompt(currentDept,currentPrompt);
+
+function renderSaved(){
+ const list=document.getElementById("savedList");
+ const valid=saved.map(k=>k.split("|").map(Number)).filter(a=>
+  Number.isInteger(a[0])&&Number.isInteger(a[1])&&
+  departments[a[0]]&&a[1]>=0&&a[1]<departments[a[0]][3]
+ );
+ if(!valid.length){
+  list.innerHTML='<div class="empty">No saved prompts yet. Save a prompt to see it here.</div>';
+  return;
+ }
+ list.innerHTML=valid.map(([d,p])=>{
+  const title=titlesForDepartment(d)[p]||("Creative Prompt "+(p+1));
+  return `<div class="prompt">
+   <div class="promptTitle">${esc(title)}</div>
+   <div class="promptDesc">${esc(departments[d][1])}</div>
+   <div class="promptActions">
+    <button class="btn primary" onclick="openPrompt(${d},${p})">View</button>
+    <button class="btn" onclick="copyPrompt(${d},${p})">Copy</button>
+    <button class="btn" onclick="toggleSaved(${d},${p})">Remove</button>
+   </div>
+  </div>`;
+ }).join("");
+}
+function renderInfo(){
+ document.getElementById("libraryStats").textContent=
+  departments.length+" departments · "+totalPrompts+" listed prompts";
+ const fields=[
+  ["Name",CREATOR_INFO.name],
+  ["Role",CREATOR_INFO.title],
+  ["About",CREATOR_INFO.about],
+  ["Education",CREATOR_INFO.education],
+  ["Skills",CREATOR_INFO.skills],
+  ["Location",CREATOR_INFO.location]
+ ];
+ if(CREATOR_INFO.youtube!=="https://youtube.com/@ThunderKabbo_345"){
+  fields.push(["YouTube",CREATOR_INFO.youtube]);
+ }
+ if(CREATOR_INFO.website)fields.push(["Website",CREATOR_INFO.website]);
+ document.getElementById("creatorProfile").innerHTML=fields.map(([label,value])=>
+  `<div class="profileLine"><span class="profileLabel">${esc(label)}</span>${esc(value)}</div>`
+ ).join("");
+}
+
+function runSearch(){
+ const q=document.getElementById("searchInput").value.trim().toLowerCase();
+ const result=document.getElementById("searchResults");
+ if(!q){
+  result.innerHTML='<div class="empty">Type something to search the library.</div>';
+  return;
+ }
+ const matches=[];
+ departments.forEach((d,i)=>{
+  if((d[1]+" "+d[2]).toLowerCase().includes(q)){
+   matches.push({type:"department",d:i});
+  }
+  titlesForDepartment(i).forEach((name,p)=>{
+   if(p<d[3]&&(name+" "+d[1]).toLowerCase().includes(q)){
+    matches.push({type:"prompt",d:i,p});
+   }
+  });
+ });
+ if(!matches.length){
+  result.innerHTML='<div class="empty">No matching results found.</div>';
+  return;
+ }
+ result.innerHTML=matches.slice(0,100).map(m=>{
+  if(m.type==="department"){
+   const d=departments[m.d];
+   return `<div class="prompt">
+    <div class="number">DEPARTMENT</div>
+    <div class="promptTitle">${d[0]} ${esc(d[1])}</div>
+    <div class="promptDesc">${esc(d[2])}</div>
+    <div class="promptActions"><button class="btn primary" onclick="openDepartment(${m.d})">Open</button></div>
+   </div>`;
+  }
+  const title=titlesForDepartment(m.d)[m.p]||"Creative Prompt";
+  return `<div class="prompt">
+   <div class="number">${esc(departments[m.d][1])}</div>
+   <div class="promptTitle">${esc(title)}</div>
+   <div class="promptDesc">${esc(descriptionFor(m.d,m.p))}</div>
+   <div class="promptActions">
+    <button class="btn primary" onclick="openPrompt(${m.d},${m.p})">View</button>
+    <button class="btn" onclick="copyPrompt(${m.d},${m.p})">Copy</button>
+    <button class="btn" onclick="toggleSaved(${m.d},${m.p})">${isSaved(m.d,m.p)?"★ Saved":"☆ Save"}</button>
+   </div>
+  </div>`;
+ }).join("");
+ if(matches.length>100){
+  result.innerHTML+='<div class="empty">Showing the first 100 results. Refine your search for more specific results.</div>';
+ }
+}
+document.getElementById("searchInput").addEventListener("input",runSearch);
+
+document.getElementById("themeBtn").onclick=()=>{
+ document.body.classList.toggle("dark");
+ const dark=document.body.classList.contains("dark");
+ try{localStorage.setItem("xtring_theme",dark?"dark":"light")}catch(e){}
+ document.getElementById("themeBtn").textContent=dark?"☀ Light Mode":"☾ Dark Mode";
+};
+try{
+ if(localStorage.getItem("xtring_theme")==="dark"){
+  document.body.classList.add("dark");
+  document.getElementById("themeBtn").textContent="☀ Light";
+ }
+}catch(e){}
+
+document.getElementById("departmentTotal").textContent=departments.length;
+document.getElementById("promptTotal").textContent=totalPrompts;
+renderDepartments();
+renderInfo();
+</script>
+</body>
+</html>
